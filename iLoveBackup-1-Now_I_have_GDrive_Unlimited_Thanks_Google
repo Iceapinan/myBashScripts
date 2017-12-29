@@ -1,0 +1,35 @@
+// Automatic script for uploading to Google Drive
+// Created by IceApinan on 29/12/2017
+
+# Create a backup from a directory
+
+DIRPATH=<Folder that you will upload> && FILENAME=backupdir$(echo $(pwd) | sed 's/\//_/g')-${DIRPATH}-$(echo $(date) | sed 's/[^a-zA-Z0-9]/./g') && tar -cvpzf ${FILENAME}.tar.gz $(pwd)/${DIRPATH} --ignore-failed-read --warning=no-file-changed --ignore-command-error && gdrive upload  ${FILENAME}.tar.gz -p <Folder ID on Google Drive> && rm -rf ${FILENAME}.tar.gz
+
+# Backup the boot partition directly to Google Drive
+
+BOOTDRIVE="$(fdisk -l | grep '^/dev/[a-z]*[0-9]' | awk '$2 == "*"' | cut -d ' ' -f 1)"
+&& dd conv=sparse if=${BOOTDRIVE} | gzip -c --fast | drive upload --stdin --title bootdrive$(echo $(date) | sed 's/[^a-zA-Z0-9]/./g').gz
+
+# Upload all files to Google Drive from a directory
+# You should run it as a script
+
+ #!/bin/bash
+ DIRPATH=TorrentsYAY
+ FILES=$(pwd)/${DIRPATH}/*
+ for f in $FILES; do 
+ 	if [ "$f" != "${f//[ ()@$]/_}" ]; then
+ 	 mv "$f" "${f//[ ()@$]/_}";
+ 	fi
+ done
+ for file in $FILES; do 
+  		if [ -d "$file" ]; then
+    		COMMAND="gdrive upload ${file} -r -p <Folder ID on Google Drive>"
+    		eval $COMMAND
+    		DELETE_THE_ENTIRE_FOLDER='rm -rf ${file}'
+    		wait
+    		echo "Removed ${file}" && eval $DELETE_THE_ENTIRE_FOLDER
+  		else
+    		COMMAND="gdrive upload ${file} --delete -p <Folder ID on Google Drive>" 
+    		eval $COMMAND
+  		fi
+ done
