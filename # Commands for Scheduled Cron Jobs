@@ -1,0 +1,4 @@
+# Commands for Scheduled Cron Jobs
+
+# Backup /var/www and mysql directories to Google Drive
+nohup /root/BackupPlan1/mysql_var-www.sh >> /var/log/BackupPlan1.log 2>&1&
