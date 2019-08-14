@@ -3,6 +3,7 @@
 
 # Create a backup from a directory
 
+# Replace <Your folder> with folder name
 DIRPATH=<Your folder> && FILENAME=backupdir$(echo $(pwd) | sed 's/\//_/g')-${DIRPATH}-$(echo $(date) | sed 's/[^a-zA-Z0-9]/./g') && tar -cvpzf ${FILENAME}.tar.gz $(pwd)/${DIRPATH} --ignore-failed-read --warning=no-file-changed --ignore-command-error && gdrive upload  ${FILENAME}.tar.gz -p <Folder ID on Google Drive> && rm -rf ${FILENAME}.tar.gz
 
 # Backup the boot partition directly to Google Drive
